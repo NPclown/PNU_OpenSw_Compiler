@@ -1,0 +1,37 @@
+FROM ubuntu:16.04
+MAINTAINER PNU pnu pnu@pnu.com
+
+#gcc / g++ / python / clang / Perl / R설치
+RUN apt-get update
+RUN apt-get install -y gcc g++ python
+RUN apt-get install -y clang
+RUN apt-get install -y rakudo
+RUN apt-get install -y r-base-core
+
+#ObjectC C++
+RUN apt-get install -y gnustep
+RUN apt-get install -y gnustep-devel
+RUN apt-get install -y gobjc
+RUN apt-get install -y gobjc++
+
+#C#
+RUN apt-get install -y mono-mcs
+RUN apt-get install -y libmono-system-numerics4.0-cil
+
+#Java 설치
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:webupd8team/java
+RUN apt-get update
+RUN apt-get install -y default-jdk
+
+#nodejs 설치
+RUN apt-get install -y curl build-essential libssl-dev
+ENV NVM_DIR=/root/.nvm
+ENV NODE_VERSION=10.16.3
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+
+RUN rm -rf /var/lib/apt/lists/*
