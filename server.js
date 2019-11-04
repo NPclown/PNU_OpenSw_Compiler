@@ -8,6 +8,8 @@ var http = require('http');
 var path = require('path');
 var child_process = require('child_process');
 var Sync = require('sync');
+var request = require('request');
+
 var app = express();
 
 // all environments
@@ -26,8 +28,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 //   app.use(express.errorHandler());
 // }
 
-var child = child_process.fork(__dirname + '/child.js');
-// var child = child_process.fork(__dirname + '/child-win.js');
+var child = child_process.fork(__dirname + '/compile.js');
+
 var taskId = 0;
 var tasks = {};
 var maxQueue = 10; // menentukan seberapa banyak queue yang bisa dilayani oleh satu server
@@ -39,7 +41,7 @@ function addTask(data, callback) {
         taskId++;
         if (taskId > maxQueue) taskId = 1;
     
-        child.send({id: taskId, script:data.script, inputs:data.inputs});
+        child.send({id: taskId, script:data.script, inputs:data.inputs, filetype:data.filetype});
     
         tasks[taskId] = callback;
     });
@@ -59,14 +61,14 @@ app.get('/compile', function(req, res) {
     res.render("index.ejs");
 });
 
-app.post('/compile', function(req, res) {
+app.post('/api/compile', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
-    var password = req.body.password;
     var script = req.body.script;
     var inputs = req.body.inputs;
-    addTask({script: script, inputs:inputs}, function(result) {
-        res.json(result);
-    });
+    var filetype = req.body.language;
+    addTask({script: script, inputs:inputs, filetype:filetype}, function(result) {
+	res.json(result);
+   });
 });
 
 http.createServer(app).listen(app.get('port'), function(){
