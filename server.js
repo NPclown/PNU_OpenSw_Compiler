@@ -41,7 +41,7 @@ function addTask(data, callback) {
         taskId++;
         if (taskId > maxQueue) taskId = 1;
     
-        child.send({id: taskId, script:data.script, inputs:data.inputs, filetype:data.filetype});
+        child.send({id: taskId, script:data.script, inputs:data.inputs, language: data.language, options:data.options});
     
         tasks[taskId] = callback;
     });
@@ -63,12 +63,19 @@ app.get('/compile', function(req, res) {
 
 app.post('/api/compile', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
-    var script = req.body.script;
-    var inputs = req.body.inputs;
-    var filetype = req.body.language;
-    addTask({script: script, inputs:inputs, filetype:filetype}, function(result) {
-	res.json(result);
-   });
+    console.log("###body###");
+    console.log(req.body);
+    var options = req.body.options;             // 컴파일 옵션
+    var script = req.body.dataString;           // 소스코드
+    var inputs = req.body.inputs;               // 인자값
+    var language = req.body.language;           // 언어 종류
+    console.log(language);
+    // child.js에 인자 넘기기
+    addTask({script: script, inputs:inputs, language: language, options:options}, function(result) {
+        console.log("###result###");
+        console.log(result);
+        res.json(result);
+    });
 });
 
 http.createServer(app).listen(app.get('port'), function(){

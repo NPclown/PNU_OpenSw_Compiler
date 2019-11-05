@@ -1,5 +1,5 @@
-__ace_shadowed__.define('ace/snippets/javascript', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+define("ace/snippets/javascript",["require","exports","module"], function(require, exports, module) {
+"use strict";
 
 exports.snippetText = "# Prototype\n\
 snippet proto\n\
@@ -182,7 +182,7 @@ snippet forr\n\
 \n\
 #modules\n\
 snippet def\n\
-	__ace_shadowed__.define(function(require, exports, module) {\n\
+	define(function(require, exports, module) {\n\
 	\"use strict\";\n\
 	var ${1/.*\\///} = require(\"${1}\");\n\
 	\n\
@@ -199,4 +199,11 @@ guard ^\\s*\n\
 ";
 exports.scope = "javascript";
 
-});
+});                (function() {
+                    window.require(["ace/snippets/javascript"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
+                })();
+            

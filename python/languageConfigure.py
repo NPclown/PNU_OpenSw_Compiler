@@ -5,90 +5,90 @@ import time
 import os
 import stat
 
-supportType = ['text/x-c++src', 'text/x-csrc', 'text/x-python', 'text/x-java']
+supportType = ['C++', 'C', 'python', 'java']
 #mime list for the languages that do not need compile:
-noCompileType = ['text/x-python','text/x-python3','text/x-bash','text/x-perl','text/x-nodejs','text/x-r','text/x-perl']
+noCompileType = ['python','python3','bash','perl','nodejs','R','perl']
 
 fileNAME = {
-'text/x-c++src' : "test.cc", 
-'text/x-c++src(clang)' : "test.cc", 
-'text/x-c++11src' : "test.cc", 
-'text/x-csrc' : "test.c",
-'text/x-csrc(clang)' : "test.c",
-'text/x-python' : "test.py",
-'text/x-python3' : "test.py",
-'text/x-java' : "test.java",
-'text/x-bash' : "test.sh",
-'text/x-perl' : "test.pl",
-'text/x-nodejs' : "test.js",
-'text/x-object-c' : "test.m",
-'text/x-object-c++' : "test.mm",
-'text/x-csharp4' : "test.cs",
-'text/x-r' : "test.r",
-'text/x-perl' : "test.pl"
+'C++' : "test.cc", 
+'C++(clang)' : "test.cc", 
+'C++11' : "test.cc", 
+'C' : "test.c",
+'C(clang)' : "test.c",
+'python' : "test.py",
+'python3' : "test.py",
+'java' : "test.java",
+'bash' : "test.sh",
+'perl' : "test.pl",
+'nodejs' : "test.js",
+'object-c' : "test.m",
+'object-c++' : "test.mm",
+'csharp' : "test.cs",
+'R' : "test.r",
+'perl' : "test.pl"
 }
 
 compileCallingFunction = {
-    'text/x-c++src': compileLanguage.compile,
-    'text/x-c++11src': compileLanguage.compile,
-    'text/x-csrc': compileLanguage.compile,
-    'text/x-c++src(clang)': compileLanguage.compile,
-    'text/x-csrc(clang)': compileLanguage.compile,
-    'text/x-java': compileLanguage.compile,
-    'text/x-object-c': compileLanguage.compile,
-    'text/x-object-c++': compileLanguage.compile,
-    'text/x-csharp4': compileLanguage.compile
+    'C++': compileLanguage.compile,
+    'C++11': compileLanguage.compile,
+    'C': compileLanguage.compile,
+    'C++(clang)': compileLanguage.compile,
+    'C(clang)': compileLanguage.compile,
+    'java': compileLanguage.compile,
+    'object-c': compileLanguage.compile,
+    'object-c++': compileLanguage.compile,
+    'csharp': compileLanguage.compile
 }
 compileKwargs = {
-    'text/x-c++src': {
+    'C++': {
         'compilerName': 'g++',
         'option': '-O2 -Wall -lm --static -DONLINE_JUDGE',
         'binaryName': 'a.out',
         'imageName': 'npclown/gcc:1.0'
     },
-    'text/x-c++11src': {
+    'C++11': {
         'compilerName': 'g++',
         'option': '-O2 -Wall -lm --static -std=c++11 -DONLINE_JUDGE',
         'binaryName': 'a.out',
         'imageName': 'npclown/gcc:1.0'
     },
-    'text/x-csrc':{
+    'C':{
         'compilerName': 'gcc',
         'option': '-O2 -Wall -lm --static -std=gnu99 -DONLINE_JUDGE',
         'binaryName': 'a.out',
         'imageName': 'npclown/gcc:1.0'
     },
-    'text/x-c++src(clang)': {
+    'C++(clang)': {
         'compilerName': 'clang++',
         'option': '-O2 -Wall -std=c++11 -DONLINE_JUDGE',
         'binaryName': 'a.out',
         'imageName': 'npclown/clang:1.0'
     },
-    'text/x-csrc(clang)':{
+    'C(clang)':{
         'compilerName': 'clang',
         'option': '-O2 -Wall -DONLINE_JUDGE -std=c99',
         'binaryName': 'a.out',
         'imageName': 'npclown/clang:1.0'
     },
-    'text/x-java': {
+    'java': {
         'compilerName': 'javac',
         'option': '-encoding UTF-8 -d /data',
         'binaryName': None,
         'imageName': 'npclown/java:1.0'
     },
-    'text/x-object-c': {
+    'object-c': {
         'compilerName': 'gcc',
         'option': '-I/usr/include/GNUstep -L/usr/lib/GNUstep -lobjc -lgnustep-base -Wall -std=c99',
         'binaryName': 'a.out',
         'imageName': 'npclown/object-c:1.0'
     },
-    'text/x-object-c++': {
+    'object-c++': {
         'compilerName': 'g++',
         'option': '-I/usr/include/GNUstep -L/usr/lib/GNUstep -lobjc -lgnustep-base -Wall',
         'binaryName': 'a.out',
         'imageName': 'npclown/object-c:1.0'
     },
-    'text/x-csharp4': {
+    'csharp': {
         'compilerName': 'dmcs',
         'option': '-warn:0 -optimize+ -reference:System.Numerics.dll',
         'binaryName': None,
@@ -97,87 +97,87 @@ compileKwargs = {
 }
 
 runCallingFunction = {
-    'text/x-c++src': compileLanguage.run,
-    'text/x-c++11src': compileLanguage.run,
-    'text/x-csrc': compileLanguage.run,
-    'text/x-c++src(clang)': compileLanguage.run,
-    'text/x-csrc(clang)': compileLanguage.run,
-    'text/x-object-c': compileLanguage.run,
-    'text/x-object-c++': compileLanguage.run,
-    'text/x-csharp4': interpreterLanguage.run,
-    'text/x-nodejs': interpreterLanguage.run,
-    'text/x-java': interpreterLanguage.run,
-    'text/x-python': interpreterLanguage.run,
-    'text/x-python3': interpreterLanguage.run,
-    'text/x-perl' : interpreterLanguage.run,
-    'text/x-bash' : interpreterLanguage.run,
-    'text/x-r' : interpreterLanguage.run,
-    'text/x-perl' : interpreterLanguage.run
+    'C++': compileLanguage.run,
+    'C++11': compileLanguage.run,
+    'C': compileLanguage.run,
+    'C++(clang)': compileLanguage.run,
+    'C(clang)': compileLanguage.run,
+    'object-c': compileLanguage.run,
+    'object-c++': compileLanguage.run,
+    'csharp': interpreterLanguage.run,
+    'nodejs': interpreterLanguage.run,
+    'java': interpreterLanguage.run,
+    'python': interpreterLanguage.run,
+    'python3': interpreterLanguage.run,
+    'perl' : interpreterLanguage.run,
+    'bash' : interpreterLanguage.run,
+    'r' : interpreterLanguage.run,
+    'perl' : interpreterLanguage.run
 }
 runKwargs = {
-    'text/x-c++src': {
+    'C++': {
         'imageName': 'npclown/gcc:1.0'
     },
-    'text/x-c++11src': {
+    'C++11': {
         'imageName': 'npclown/gcc:1.0'
     },
-    'text/x-csrc': {
+    'C': {
         'imageName': 'npclown/gcc:1.0'
     },
-    'text/x-c++src(clang)': {
+    'C++(clang)': {
         'imageName': 'npclown/clang:1.0'
     },
-    'text/x-csrc(clang)': {
+    'C(clang)': {
         'imageName': 'npclown/clang:1.0'
     },
-    'text/x-python': { 
+    'python': { 
 	'intpName': 'python',
         'imageName': 'npclown/gcc:1.0'
     },
-    'text/x-python3': { 
+    'python3': { 
 	'intpName': 'python3',
         'imageName': 'npclown/gcc:1.0'
     },
-    'text/x-java': {
+    'java': {
         'option': '-Dfile.encoding=UTF-8 -classpath /data',
         'intpName': 'java',
         'imageName': 'npclown/java:1.0'
     },
-    'text/x-bash' : {
+    'bash' : {
         'intpName': 'bash',
 	'imageName' : 'npclown/gcc:1.0'
     },
-    'text/x-perl' : {
+    'perl' : {
         'intpName': 'perl',
 	'imageName' : 'npclown/perl:1.0'
     },
-    'text/x-nodejs' : {
+    'nodejs' : {
         'intpName': 'node',
 	'imageName' : 'npclown/nodejs:1.0'
     },
-    'text/x-object-c' : {
+    'object-c' : {
 	'imageName' : 'npclown/object-c:1.0'
     },
-    'text/x-object-c++' : {
+    'object-c++' : {
 	'imageName' : 'npclown/object-c:1.0'
     },
-    'text/x-csharp4' : {
+    'csharp' : {
         'intpName': 'mono',
 	'imageName' : 'npclown/csharp:1.0'
     },
-    'text/x-r' : {
+    'R' : {
         'intpName': 'Rscript',
 	'imageName' : 'npclown/language-r:1.0'
     },
-    'text/x-perl' : {
+    'perl' : {
         'intpName': 'perl6',
 	'imageName' : 'npclown/perl:1.0'
     }
 }
 ifTheBinaryFileNeedsXMode = {
-    'text/x-c++src': True,
-    'text/x-csrc': True,
-    'text/x-java': False
+    'c++': True,
+    'c': True,
+    'java': False
 }
 
 def isFileWritingDone(fileName, checkXMode = False, blockTimeLimit = 2):

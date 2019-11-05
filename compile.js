@@ -1,4 +1,5 @@
 var py = require('python-shell');
+var sh = require('sync-exec');
 
 process.on('message', function(message){
 	//Process data
@@ -23,7 +24,8 @@ process.on('message', function(message){
 				process.send({result:obj.stderr,timeExec: obj.runningTime, success:true, id:message.id});
 				break;
 			case "tle":
-				process.send({result:obj.stderr,timeExec: obj.runningTime, success:true, id:message.id});
+				sh("docker rm -f " + obj.containerId);
+				process.send({result:obj.stderr,timeExec: 0, success:true, id:message.id});			
 				break;
 			case "error":
 				process.send({result:obj.stderr,timeExec: obj.runningTime, success:true, id:message.id});

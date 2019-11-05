@@ -12,7 +12,7 @@ def getVolumnPath(S):
         hostVolumn = hostVolumn + '/'
     return (hostVolumn, containerVolumn)
 
-def compile(sourceFile, volumn, compilerName = 'g++', option='-std=c++0x', binaryName='a.out', imageName='baekjoon/onlinejudge-gcc:4.8', timeLimit=10, logger=None):
+def compile(sourceFile, volumn, compilerName = 'g++', option='-std=c++0x', binaryName='a.out', imageName='npclown/gcc:1.0', timeLimit=10, logger=None):
     (hostVolumn, containerVolumn) = getVolumnPath(volumn)
 
     if len(sourceFile) < 1:
@@ -84,6 +84,7 @@ def run(volumn, compilerName = 'g++', option='-std=c++0x', runName='a.out', imag
         res['stdout'] = ''
         res['stderr'] = 'Running time limit exceeded.'
 	res['runningTime'] = ''
+	res['containerId'] = D['ContainerId']
     elif exitCode == 137:
         res['state'] = 'error'
         res['stdout'] = ''

@@ -1,140 +1,146 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Compiler - Sonny Lab</title>
-	<link rel="stylesheet" href="/styles/grid.css">
-	<link rel="stylesheet" href="/styles/style.css">
-	<script src="/scripts/jquery.js"></script>
+    <meta charset="UTF-8">
+    <title>Compiler - Sonny Lab</title>
+    <link rel=stylesheet href="../doc/docs.css">
+    <link rel="stylesheet" href="/styles/grid.css">
+    <link rel="stylesheet" href="/styles/style.css">
+    <link rel="stylesheet" type="text/css" href="/../lib/codemirror.css">
+    <link rel="stylesheet" href="../theme/darcula.css">
+    <script type="text/javascript" src="../lib/codemirror.js"></script>
+    <script src="/scripts/jquery.js"></script>
+    <script src="../mode/python/python.js"></script>
+    <script src="../mode/clike/clike.js"></script>
+    <script src="../addon/selection/active-line.js"></script>
+    <script src="../addon/edit/matchbrackets.js"></script>
 </head>
 <body>
-	<div id="menu">
-		<div class="container">
-			<a href="http://sonnylab.com/"><div class="logosmall"></div></a>
-			<ul class="menu">
-				<li><a href="http://sonnylab.com/api/compiler">Compiler</a></li>
-				<li><a href="http://sonnylab.com/api/snippet">Snippet</a></li>
-				<li><a href="http://sonnylab.com/api/beat">Beat</a></li>
-				<li><a href="http://sonnylab.com/">Back To SonnyLab</a></li>
-			</ul>
-		</div>
-	</div>
-	<div class="article">
-		<div class="grid">
-			<form method="post" id="myCode">
-			<div class="col-2-3">			
-					<textarea name="script" id="textarea" cols="30" rows="25">#include &lt;iostream&gt;
-using namespace std;
+<div id="menu">
+    <div class="container">
+        <a href="http://sonnylab.com/">
+            <div class="logosmall"></div>
+        </a>
+        <ul class="menu">
+            <li><a href="http://sonnylab.com/api/compiler">Compiler</a></li>
+            <li><a href="http://sonnylab.com/api/snippet">Snippet</a></li>
+            <li><a href="http://sonnylab.com/api/beat">Beat</a></li>
+            <li><a href="http://sonnylab.com/">Back To SonnyLab</a></li>
+        </ul>
+    </div>
+</div>
+<div class="article">
+    <div class="grid">
+        <form method="post" id="myCode">
+            <div class="col-2-3">
+                <textarea name="script" id="code" class="codemirror-textarea">
+print("hello")
+                </textarea>
+                <button class="btn" type="submit">Save and Compile!</button>
+                <select name="language" id="language" style="margin-left:20px;">
+                    <option value="C">C</option>
+		    <option value="C(clang)">C(clang)</option>
+                    <option value="C++">C++</option>
+		    <option value="C++(clang)">C++(clang)</option>	
+                    <option value="C++11">C++11</option>
+                    <option value="java">Java</option>
+                    <option value="python3">Python3</option>
+                    <option value="bash">Bash</option>
+		    <option value="perl">Perl</option>
+                    <option value="nodejs">NodeJS</option>
+                    <option value="object-c">Object-C</option>
+		    <option value="object-c++">Object-C++</option>
+		    <option value="csharp">C#</option>
+		    <option value="R">R</option>
+                    <option value="python" selected="selected">Python</option>
+                    <option>darcula</option>
+                </select>
+                <input type="text" name="timelimit">
 
-int main() {
-	cout &lt;&lt; &quot;Hello Kave&quot; &lt;&lt; endl;
-	return 0;
-}</textarea>
-					<button class="btn" type="submit">Save and Compile!</button>
-				
-			</div>
-			<div class="col-1-3">
-				<div class="loading" style="display:none"></div>
-				<h3>Input</h3>
-				<textarea name="inputs" id="inputs" cols="30" rows="4"></textarea>
-				<h3>Compile Result</h3>
-				<textarea name="result" id="result" cols="30" rows="8" disabled="disabled"></textarea>
-				Execution time : <span id="time"></span>
-				<h3>Language Selected</h3>
-				<textarea name="language" id="language" cols="30" rows="4"></textarea>
-			</div>
-			</form>
-		</div>
-	</div>
-	<script>
-	function inject(callback) {
-	    var baseUrl = "/src/";
-	    
-	    var load = window.__ace_loader__ = function(path, module, callback) {
-	        var head = document.getElementsByTagName('head')[0];
-	        var s = document.createElement('script');
-	    
-	        s.src = baseUrl + path;
-	        head.appendChild(s);
-	        
-	        s.onload = function() {
-	            window.__ace_shadowed__.require([module], callback);
-	        };
-	    };
+            </div>
+            <div class="col-1-3">
+                <div class="loading" style="display:none"></div>
+                <h3>Input</h3>
+                <textarea name="inputs" id="inputs" cols="30" rows="4"></textarea>
+                <h3>Compile Options</h3>
+                <textarea name="options" id="options" cols="30" rows="2"></textarea>
+                <h3>Compile Result</h3>
+                <textarea name="result" id="result" cols="30" rows="8" disabled="disabled"></textarea>
+                Execution time : <span id="time"></span>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        // 언어 스타일 정의하는 부분 mode를 ./public/mode 내의 폴더명 중 하나로 선택하면 그 스타일로 변경됨 +
+        // 변경을 위해서는 최상단에 script 태그로 폴더 경로와 폴더내 js파일 추가해줘야 함함
+        mode:  "python",
+        styleActiveLine: true,
+        matchBrackets: true
+    });
+    // 테마 옵션 설정하는 부분 -> 코드미러 테마 참조
+    editor.setOption("theme", "darcula");
+    location.hash = "#" + "darcula";
 
-	    load('ace-compiler.js', "ace/ext/textarea", function() {
-	        var ace = window.__ace_shadowed__;
-	        
-	        ace.options.mode = "c_cpp";
-	        var Event = ace.require("ace/lib/event");
-	        var areas = document.getElementsByTagName("textarea");
-	        for (var i = 0; i < areas.length; i++) {
-	            Event.addListener(areas[i], "click", function(e) {
-	                if (e.detail == 3) {
-	                    ace.transformTextarea(e.target, load);
-	                }
-	            });
-	        }
-	        callback && callback();
-	    });
-	}
+    $('#myCode').submit(function (event) {
+        event.preventDefault();
+        $('.loading').slideDown('slow');
+        $('#result').html('');
+        $('#time').html('');
+        // $('#textarea').val($('#').getSession().getValue());
+        // localStorage.mycode = textAce.getSession().getValue();
+        var datastring = $("#myCode").serialize();
+        // console.log(datastring);
+        $("#myCode :input").attr("disabled", true);
+        // 서버로 정보전달을 위한 데이터파일로 json 파일 생성 및 정보 저장
+        var json = new Object();
+        json.language = $('#language option:selected').val();       // 언어 종류
+        json.dataString = $("#code").val();                         // 소스 코드
+        json.inputs = $("#inputs").val();                           // 인자값
+        json.options = $("#options").val();                         // 컴파일 옵션
+        console.log("####json####");
+        console.log(json);
 
-	// Call the inject function to load the ace files.
-	var textAce;
-	$(document).ready(function() {
-		if (!localStorage.mycode) {
-			localStorage.mycode = $('#textarea').val();
-		}
-		$('#textarea').val(localStorage.mycode);
-		inject(function () {
-		    // Transform the textarea on the page into an ace editor.
-		    var ace = window.__ace_shadowed__;
-		    var t = document.querySelector("textarea");
-		    textAce = ace.transformTextarea(t, window.__ace_loader__);
-		    setTimeout(function(){textAce.setDisplaySettings(false)});
-		    // console.log(textAce);
-		});
+        // submit 버튼이 눌려질때 동작하는 함수 정의
+        $.ajax({
+            type: "POST",
+            url: "/api/compile",
+            timeout: 100000,
+            data: json,
+            dataType: "json",
+            // success 응답에 대한 콜백 함수
+            success: function(data) {
+                console.log("#####2-1");
+                if (data.success) {
+                    console.log("#####2-1-Success");
+                    $('#result').html(data.result);
+                    $('#time').html(data.timeExec + ' ms');
+                    console.log("###TIME####");
+                    console.log(data.timeExec);
+                } else {
+                    console.log("#####2-1-error");
+                    $('#result').html(data.error);
+                }
+                $("#myCode :input").attr("disabled", false);
+                $('.loading').slideUp('slow');
+            },
+            // error 함수에 대한 콜백 함수
+            error: function(error){
+                console.log("#####2-2");
+                console.log(error);
+                $('.result').html(error);
+                $("#myCode :input").attr("disabled", false);
+                $('.loading').slideUp('slow');
+            }
+        });
+        // return false;
+    });
 
-		$('#myCode').submit(function (event) {
-			event.preventDefault();
-			$('.loading').slideDown('slow');
-			$('#result').html('');
-			$('#time').html('');
-			$('#textarea').val(textAce.getSession().getValue());
-			localStorage.mycode = textAce.getSession().getValue();
-			var datastring = $("#myCode").serialize();
-			console.log(datastring);
-			$("#myCode :input").attr("disabled", true);
-			$.ajax({
-			    type: "POST",
-			    url: "/api/compile",
-			    timeout: 60000,
-			    data: datastring,
-			    dataType: "json",
-			    success: function(data) {
-			        if (data.success) {
-			        	$('#result').html(data.result);
-			        	$('#time').html(data.timeExec + ' ms');
-			        } else {
-			        	$('#result').html(data.error);
-			        }
-			        $("#myCode :input").attr("disabled", false);
-			        $('.loading').slideUp('slow');
-			    },
-			    error: function(error){
-			        console.log(error);
-			        $('.result').html(error);
-			        $("#myCode :input").attr("disabled", false);
-			        $('.loading').slideUp('slow');
-			    }
-			});
-			// return false;
-		});
-	});
-
-	</script>
-		<div class="article footer">
-			&copy; Copyright &copy; 2014 Sonnylab
-		</div>
-	</body>
+</script>
+<div class="article footer">
+    &copy; Copyright &copy; 2014 Sonnylab
+</div>
+</body>
 </html>

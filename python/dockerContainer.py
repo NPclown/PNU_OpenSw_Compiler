@@ -43,14 +43,14 @@ def execute(command, timeLimit = 5, logger=None):
 
         if wait is None:
             popen.kill()
-            #subprocess.call(['docker', 'kill', containerID])
             if logger is not None:
                 logger.info('TLE')
             return {
                 'state': 'tle',
                 'exitcode': '9',
                 'stdout': '',
-                'stderr': 'Time Limit Exceeded'
+                'stderr': 'Time Limit Exceeded',	
+		'ContainerId':containerID
             }
         exitCode = int(popen.stdout.read().strip())
 

@@ -52,7 +52,7 @@ memorySwapLimit=100
 
 try:
     #Get file type
-    filetype = getFromDict(key='filetype', json_data=json_data, errorMessage='No file type', logger=logger)
+    filetype = getFromDict(key='language', json_data=json_data, errorMessage='No file type', logger=logger)
     #Get file name
     fileName = fileNAME[filetype]
     #Get source code
@@ -122,23 +122,23 @@ try:
  
     #run
     runName = 'a.out'
-    if filetype == 'text/x-python':
+    if filetype == 'python':
         runName = "/data/"+fileName
-    elif filetype == 'text/x-python3':
+    elif filetype == 'python3':
         runName = "/data/"+fileName
-    elif filetype == 'text/x-java':
+    elif filetype == 'java':
         runName = fileName[:fileName.rfind('.')]
-    elif filetype == 'text/x-bash':
+    elif filetype == 'bash':
         runName = "/data/"+fileName
-    elif filetype == 'text/x-perl':
+    elif filetype == 'perl':
         runName = "/data/"+fileName
-    elif filetype == 'text/x-nodejs':
+    elif filetype == 'nodejs':
         runName = "/data/"+fileName
-    elif filetype == 'text/x-csharp4':
+    elif filetype == 'csharp':
         runName = "/data/test.exe"
-    elif filetype == 'text/x-r':
+    elif filetype == 'R':
         runName = "/data/"+fileName
-    elif filetype == 'text/x-perl':
+    elif filetype == 'perl':
         runName = "/data/"+fileName
 
     result = runCallingFunction[filetype](
