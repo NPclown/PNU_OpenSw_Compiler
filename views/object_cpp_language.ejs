@@ -32,13 +32,14 @@
         <form method="post" id="myCode">
             <div class="col-2-3">
                 <textarea name="script" id="code" class="codemirror-textarea">//gcc 5.0.4
-
 #import <Foundation/Foundation.h>
-
-int main (int argc, const char * argv[])
+ 
+int main (void)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSLog (@"Hello, World!");
+    NSInteger a,b;
+    scanf("%d %d",&a,&b);
+    printf("%d\n",a+b);
     [pool drain];
     return 0;
 }</textarea>

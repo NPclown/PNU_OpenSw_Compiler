@@ -17,7 +17,7 @@ fileNAME = {
 'C(clang)' : "test.c",
 'python' : "test.py",
 'python3' : "test.py",
-'java' : "test.java",
+'java' : "Pnutest.java",
 'bash' : "test.sh",
 'perl' : "test.pl",
 'nodejs' : "test.js",
