@@ -31,21 +31,20 @@
     <div class="grid">
         <form method="post" id="myCode">
             <div class="col-2-3">
-                <textarea name="script" id="code" class="codemirror-textarea">//gcc 5.4.0
+                <textarea name="script" id="code" class="codemirror-textarea">//clang 3.8.0
 
-#include  <stdio.h>
+#include <iostream>
 
-int main(void)
+int main()
 {
-    printf("Hello, world!\n");
-    return 0;
+    std::cout << "Hello, world!\n";
 }</textarea>
                 <button class="btn" type="submit">Save and Compile!</button>
                 <select name="language" id="language" style="margin-left:20px;" onchange="onModeChange()">
-                    <option value="C" selected="selected">C</option>
+                    <option value="C" >C</option>
 		    <option value="C(clang)">C(clang)</option>
                     <option value="C++">C++</option>
-		    <option value="C++(clang)">C++(clang)</option>	
+		    <option value="C++(clang)" selected="selected">C++(clang)</option>	
                     <option value="C++11">C++11</option>
                     <option value="java">Java</option>
                     <option value="python">Python</option>
@@ -131,7 +130,7 @@ int main(void)
         lineNumbers: true,
         // 언어 스타일 정의하는 부분 mode를 ./public/mode 내의 폴더명 중 하나로 선택하면 그 스타일로 변경됨 +
         // 변경을 위해서는 최상단에 script 태그로 폴더 경로와 폴더내 js파일 추가해줘야 함함
-        mode:  "text/x-csrc",
+        mode:  "text/x-c++src",
         styleActiveLine: true,
         matchBrackets: true
     });

@@ -61,6 +61,69 @@ app.get('/compile', function(req, res) {
     res.render("index.ejs");
 });
 
+app.get('/compile/c_language',function(req, res){
+    res.render("c_language.ejs");
+});
+
+app.get('/compile/c_language_clang',function(req, res){
+    res.render("c_language_clang.ejs");
+});
+
+
+app.get('/compile/cpp_language',function(req, res){
+    res.render("cpp_language.ejs");
+});
+
+
+app.get('/compile/cpp11_language',function(req, res){
+    res.render("cpp11_language.ejs");
+});
+
+
+app.get('/compile/cpp_language_clang',function(req, res){
+    res.render("cpp_language_clang.ejs");
+});
+
+app.get('/compile/java_language',function(req, res){
+    res.render("java_language.ejs");
+});
+
+app.get('/compile/python_language',function(req, res){
+    res.render("python_language.ejs");
+});
+
+app.get('/compile/python3_language',function(req, res){
+    res.render("python3_language.ejs");
+});
+
+app.get('/compile/bash_language',function(req, res){
+    res.render("bash_language.ejs");
+});
+
+app.get('/compile/perl_language',function(req, res){
+    res.render("perl_language.ejs");
+});
+
+app.get('/compile/nodejs_language',function(req, res){
+    res.render("nodejs_language.ejs");
+});
+
+app.get('/compile/r_language',function(req, res){
+    res.render("r_language.ejs");
+});
+
+app.get('/compile/csharp_language',function(req, res){
+    res.render("csharp_language.ejs");
+});
+
+app.get('/compile/object_c_language',function(req, res){
+    res.render("object_c_language.ejs");
+});
+
+app.get('/compile/object_cpp_language',function(req, res){
+    res.render("object_cpp_language.ejs");
+});
+
 app.post('/api/compile', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     console.log("###body###");

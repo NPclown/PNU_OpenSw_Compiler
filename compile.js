@@ -16,6 +16,9 @@ process.on('message', function(message){
         	if(err) throw err;
        		console.log(results);
 		var obj = eval("("+results+")");
+		if (results == null){
+			process.send({result:"server error",timeExec: 0, success:true, id:message.id});
+		}
 		switch(obj.state){
 			case "success":
 				process.send({result:obj.stdout,timeExec: obj.runningTime, success:true, id:message.id});
@@ -31,7 +34,7 @@ process.on('message', function(message){
 				process.send({result:obj.stderr,timeExec: obj.runningTime, success:true, id:message.id});
 				break;
                         default:
-                                console.log("error");
+                                process.send({result:"server error",timeExec: 0, success:true, id:message.id});
 		}
 	});
 });

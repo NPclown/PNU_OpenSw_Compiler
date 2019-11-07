@@ -31,18 +31,20 @@
     <div class="grid">
         <form method="post" id="myCode">
             <div class="col-2-3">
-                <textarea name="script" id="code" class="codemirror-textarea">//gcc 5.4.0
+                <textarea name="script" id="code" class="codemirror-textarea">//gcc 5.0.4
 
-#include  <stdio.h>
+#import <Foundation/Foundation.h>
 
-int main(void)
+int main (int argc, const char * argv[])
 {
-    printf("Hello, world!\n");
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSLog (@"Hello, World!");
+    [pool drain];
     return 0;
 }</textarea>
                 <button class="btn" type="submit">Save and Compile!</button>
                 <select name="language" id="language" style="margin-left:20px;" onchange="onModeChange()">
-                    <option value="C" selected="selected">C</option>
+                    <option value="C">C</option>
 		    <option value="C(clang)">C(clang)</option>
                     <option value="C++">C++</option>
 		    <option value="C++(clang)">C++(clang)</option>	
@@ -53,7 +55,7 @@ int main(void)
                     <option value="bash">Bash</option>
 		    <option value="perl">Perl</option>
                     <option value="nodejs">NodeJS</option>
-                    <option value="object-c">Object-C</option>
+                    <option value="object-c" selected="selected">Object-C</option>
 		    <option value="object-c++">Object-C++</option>
 		    <option value="csharp">C#</option>
 		    <option value="R">R</option>
@@ -88,7 +90,7 @@ int main(void)
            	location.href="/compile/cpp_language";
                 break
             case "C++11":
-           	location.href="/compile/cpp11_language";
+           	location.href="/compile/cp11_language";
                 break
             case "C++(clang)":
            	location.href="/compile/cpp_language_clang";
@@ -131,7 +133,7 @@ int main(void)
         lineNumbers: true,
         // 언어 스타일 정의하는 부분 mode를 ./public/mode 내의 폴더명 중 하나로 선택하면 그 스타일로 변경됨 +
         // 변경을 위해서는 최상단에 script 태그로 폴더 경로와 폴더내 js파일 추가해줘야 함함
-        mode:  "text/x-csrc",
+        mode:  "text/x-objectivec",
         styleActiveLine: true,
         matchBrackets: true
     });

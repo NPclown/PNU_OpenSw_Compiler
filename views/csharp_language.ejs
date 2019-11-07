@@ -31,18 +31,28 @@
     <div class="grid">
         <form method="post" id="myCode">
             <div class="col-2-3">
-                <textarea name="script" id="code" class="codemirror-textarea">//gcc 5.4.0
+                <textarea name="script" id="code" class="codemirror-textarea">//Rextester.Program.Main is the entry point for your code. Don't change it.
+//Compiler version 4.0.30319.17929 for Microsoft (R) .NET Framework 4.5
 
-#include  <stdio.h>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
-int main(void)
+namespace Rextester
 {
-    printf("Hello, world!\n");
-    return 0;
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            //Your code goes here
+            Console.WriteLine("Hello, world!");
+        }
+    }
 }</textarea>
                 <button class="btn" type="submit">Save and Compile!</button>
                 <select name="language" id="language" style="margin-left:20px;" onchange="onModeChange()">
-                    <option value="C" selected="selected">C</option>
+                    <option value="C">C</option>
 		    <option value="C(clang)">C(clang)</option>
                     <option value="C++">C++</option>
 		    <option value="C++(clang)">C++(clang)</option>	
@@ -55,7 +65,7 @@ int main(void)
                     <option value="nodejs">NodeJS</option>
                     <option value="object-c">Object-C</option>
 		    <option value="object-c++">Object-C++</option>
-		    <option value="csharp">C#</option>
+		    <option value="csharp"  selected="selected">C#</option>
 		    <option value="R">R</option>
                 </select>
 
@@ -131,7 +141,7 @@ int main(void)
         lineNumbers: true,
         // 언어 스타일 정의하는 부분 mode를 ./public/mode 내의 폴더명 중 하나로 선택하면 그 스타일로 변경됨 +
         // 변경을 위해서는 최상단에 script 태그로 폴더 경로와 폴더내 js파일 추가해줘야 함함
-        mode:  "text/x-csrc",
+        mode:  "text/x-csharp",
         styleActiveLine: true,
         matchBrackets: true
     });

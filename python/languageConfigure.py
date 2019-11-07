@@ -111,7 +111,7 @@ runCallingFunction = {
     'python3': interpreterLanguage.run,
     'perl' : interpreterLanguage.run,
     'bash' : interpreterLanguage.run,
-    'r' : interpreterLanguage.run,
+    'R' : interpreterLanguage.run,
     'perl' : interpreterLanguage.run
 }
 runKwargs = {

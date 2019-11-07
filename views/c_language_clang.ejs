@@ -31,7 +31,7 @@
     <div class="grid">
         <form method="post" id="myCode">
             <div class="col-2-3">
-                <textarea name="script" id="code" class="codemirror-textarea">//gcc 5.4.0
+                <textarea name="script" id="code" class="codemirror-textarea">//clang 3.8.0
 
 #include  <stdio.h>
 
@@ -42,8 +42,8 @@ int main(void)
 }</textarea>
                 <button class="btn" type="submit">Save and Compile!</button>
                 <select name="language" id="language" style="margin-left:20px;" onchange="onModeChange()">
-                    <option value="C" selected="selected">C</option>
-		    <option value="C(clang)">C(clang)</option>
+                    <option value="C">C</option>
+		    <option value="C(clang)" selected="selected">C(clang)</option>
                     <option value="C++">C++</option>
 		    <option value="C++(clang)">C++(clang)</option>	
                     <option value="C++11">C++11</option>
