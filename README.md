@@ -53,20 +53,20 @@ redirect_uri: redirect_uri,
 ___
 ### Docker API
 Request(json)
-> 'stage':'compile' or 'run'
-'mime': 'text/x-c++src', 'text/x-java', 'text/x-python'
-'filename': source file name
-'stdin': stdin 문자열
-'source': 소스코드 문자열
-'time_limit': running time limit, 초 단위 (없으면 5초)
-'memory_limit': memory limit, MByte 단위 (없으면 128MB)
-'memory_limit_strict': true or false. (없으면 false) true이면 memory_limit만큼만 할당. 
-(memory swap size 제한) false이면 memory_limit의 두 배.(swap size)
+> 'stage':'compile' or 'run'  
+'mime': 'text/x-c++src', 'text/x-java', 'text/x-python'  
+'filename': source file name  
+'stdin': stdin 문자열  
+'source': 소스코드 문자열  
+'time_limit': running time limit, 초 단위 (없으면 5초)  
+'memory_limit': memory limit, MByte 단위 (없으면 128MB)  
+'memory_limit_strict': true or false. (없으면 false) true이면 memory_limit만큼만 할당.   
+(memory swap size 제한) false이면 memory_limit의 두 배.(swap size)  
 
 Response(json)
->'state': 'tle', 'error', 'compile error', 'success'
-'stdout': stdout
-'stderr': stderr
+>'state': 'tle', 'error', 'compile error', 'success'  
+'stdout': stdout  
+'stderr': stderr  
 ___
 ## 참고
 node-compiler : https://github.com/sonnylazuardi/node-compiler  
