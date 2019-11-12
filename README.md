@@ -1,61 +1,101 @@
-# PNU_OpenSW_Compiler
+PNU_OpenSW_Compiler
+==============
+### 사양
+1. nodejs 10.16.3 권장
+2. Docker
+3. Python 2.7 권장
 
+### 설치
 
-# 요구사항
+```console
+$ git clone git@github.com:NPclown/PNU_OpenSW_Compiler.git
+$ cd PNU_OpenSW_Compiler
+$ npm install
+```
 
-    g++ compiler
-           
-    node.js
-    
+### 도커 이미지 다운
+```console
+$ docker pull npclown/gcc:1.0
+$ docker pull npclown/clang:1.0
+$ docker pull npclown/java:1.0
+$ docker pull npclown/perl:1.0
+$ docker pull npclown/csharp:1.0
+$ docker pull npclown/object-c:1.0
+$ docker pull npclown/language-r:1.0
+$ docker pull npclown/nodejs:1.0
+```
 
-# 설치과정
+### 실행
+```console
+$ npm start
+```
 
-- 서버에 node.js 와 gcc 컴파일러 설치
+### 테스트 환경
+```
+http:// localhost:3000/compile
+http:// 127.0.0.1:3000/compile
+```
+___
 
-      apt-get install g++
-    
-- 프로젝트 디렉토리에서 cmd창 오픈 후 명령어 실행
+### GitHub Login 연동
 
-      npm install
-    
-- 윈도우 환경이라면 server.js 파일에 다음 부분 수정 
-  (child-win.js -> 윈도우 / child.js -> 리눅스)
+1. github.com -> Settings -> Developer settings -> OAuth Apps 생성
+2. Cilent_ID , Client_Secret, Authorization callback URL 복사
+3. Server.js 수정
+```
+var redirect_uri = Authorization callback URL(복사한 값);
 
-      var child = child_process.fork(__dirname + '/child-win.js');
+client_id: Cilent_ID(복사한 값),
+client_secret: Client_Secret(복사한 값),
+code: code,
+redirect_uri: redirect_uri,
+```
+___
+### Docker API
+Request(json)
+> 'stage':'compile' or 'run'
+'mime': 'text/x-c++src', 'text/x-java', 'text/x-python'
+'filename': source file name
+'stdin': stdin 문자열
+'source': 소스코드 문자열
+'time_limit': running time limit, 초 단위 (없으면 5초)
+'memory_limit': memory limit, MByte 단위 (없으면 128MB)
+'memory_limit_strict': true or false. (없으면 false) true이면 memory_limit만큼만 할당. 
+(memory swap size 제한) false이면 memory_limit의 두 배.(swap size)
 
-- run the server.js
+Response(json)
+>'state': 'tle', 'error', 'compile error', 'success'
+'stdout': stdout
+'stderr': stderr
+___
+## 참고
+node-compiler : https://github.com/sonnylazuardi/node-compiler 
+docker-images : https://github.com/Baekjoon/Dockerfiles
+docker-Api : https://github.com/Startlink/docker-sandbox-API
+___
+## License
 
-      node server.js  or  npm start
-      
-    
-# 테스트과정
+(The MIT License)
 
-     http://localhost:3000/compile
-  
-     http://127.0.0.1:3000/compile
-     
-   
-# 실행구조(ComPile 버튼 누를 시)
+Copyright (c) 2013-2014 Sonny Lazuardi <sonnylazuardi@gmail.com>
 
-  1. /script/test.cpp 형식으로 파일 저장
-  
-  2. /script/input.txt 형식으로 파일 저장
-  
-  3. g++ 컴파일을 이용해 컴파일 후 /scrpit/exe/test.exe 로 저장
-  
-  4. test.exe < input.txt로 파일 실행 후 결과를 response 해줌
-  
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
-# 추가 및 수정 사항
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
-- 컴파일 오류 발생 시 출력
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-- Input 값 오류 발생 시 출력
-
-- SandBox를 통한 Server 보호
-
-- 다른 언어 컴파일 설치 및 컴파일 명령어 파악
-
-- 실행시간, CPU 사용시간, 메모리값 확인 필요
-
-- 기타 등등 생각나면 추가
+---
