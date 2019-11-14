@@ -4,7 +4,7 @@ PNU_OpenSW_Compiler
 1. nodejs 10.16.3 권장
 2. Docker
 3. Python 2.7 권장
-4. npx 
+4. npx 설치
 
 ### 설치
 
@@ -24,6 +24,7 @@ $ docker pull npclown/csharp:1.0
 $ docker pull npclown/object-c:1.0
 $ docker pull npclown/language-r:1.0
 $ docker pull npclown/nodejs:1.0
+$ docker pull qkrwlghddlek/ubuntu_react
 ```
 
 ### 실행
@@ -73,6 +74,10 @@ ___
 node-compiler : https://github.com/sonnylazuardi/node-compiler  
 docker-images : https://github.com/Baekjoon/Dockerfiles  
 docker-Api : https://github.com/Startlink/docker-sandbox-API  
+codeMirror : https://github.com/codemirror/codemirror  
+NPM File-Browser : https://www.npmjs.com/package/file-browser   
+
+
 ___
 ## License
 
