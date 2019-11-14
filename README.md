@@ -4,6 +4,7 @@ PNU_OpenSW_Compiler
 1. nodejs 10.16.3 권장
 2. Docker
 3. Python 2.7 권장
+4. npx 
 
 ### 설치
 

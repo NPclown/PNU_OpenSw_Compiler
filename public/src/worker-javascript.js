@@ -11463,7 +11463,7 @@ exports.rhino = {
   Packages     : false,
   print        : false,
   quit         : false,
-  readFile     : false,
+  readFile     : true,
   readUrl      : false,
   runCommand   : false,
   seal         : false,

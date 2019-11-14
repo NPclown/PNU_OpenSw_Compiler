@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compiler - PNU</title>
+    <link rel=stylesheet href="../doc/docs.css">
+    <link rel="stylesheet" href="/styles/grid.css">
+    <link rel="stylesheet" href="/styles/style.css">
+    <link rel="stylesheet" type="text/css" href="/../lib/codemirror.css">
+    <link rel="stylesheet" href="../theme/darcula.css">
+    <script type="text/javascript" src="../lib/codemirror.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="../mode/python/python.js"></script>
+    <script src="../mode/clike/clike.js"></script>
+    <script src="../mode/perl/perl.js"></script>
+    <script src="../mode/r/r.js"></script>
+    <script src="../mode/javascript/javascript.js"></script>
+    <script src="../mode/shell/shell.js"></script>
+    <script src="../addon/selection/active-line.js"></script>
+    <script src="../addon/edit/matchbrackets.js"></script>
+    <script>
+        var user_id = '<%= user_id %>';
+        var uname = '<%= name %>';
+    </script>
+    <script>if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }</script>
+    <!--    <link rel="stylesheet" href="/lib/bootstrap.min.css">-->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/app.css">
+</head>
+<body>
+<div id="menu">
+    <div class="container">
+        <a href="/compile">
+            <div class="logosmall"></div>
+        </a>
+        <ul class="menu">
+            <% if(user_id){ %>
+                <li>Welcome! <%= name %></li>
+                <li><a href='/logout'>Log Out</a></li>
+            <% }else{ %>
+                <li><a href='/login'>Login</a></li>
+            <% } %>
+                <li><a href='/compile'>Compile</a></li>
+                <li><a href='/web'>WebDevelop</a></li>
+                <li><select name="language" id="language" style="margin-left:20px;" onchange="onModeChange()">
+                        <option value="1">Bash</option>
+                        <option value="5" selected="selected">C</option>
+                        <option value="6">C(clang)</option>
+                        <option value="7">C++</option>
+                        <option value="8">C++11</option>
+                        <option value="9">C++(clang)</option>
+                        <option value="10">C#</option>
+                        <option value="15">Java</option>
+                        <option value="20">NodeJS</option>
+                        <option value="25">Object-C</option>
+                        <option value="26">Object-C++</option>
+                        <option value="30">Perl</option>
+                        <option value="31">Python</option>
+                        <option value="32">Python3</option>
+                        <option value="35">R</option>
+                    </select></li>
+
+        </ul>
+    </div>
+</div>
+
+<% if(user_id){ %>
+    <div class="panel panel-default mainpanel" style="float: left">
+        <div class="panel-heading">
+            <div style="text-align:center">
+            File Browser
+            </div>
+            <span class="up">
+                    <i class="fa fa-level-up"></i> Up
+                   </span>
+            <!--        <span class="add" id="add_button" onclick="onAddClicked()">-->
+            <span class="add" id="add_button">
+                    <i class="fa fa-level-up"></i> Add
+                   </span>
+            <!--        <span class="delete" id="delete_button" onclick="onDeleteClicked()">-->
+            <span class="delete" id="delete_button">
+                    <i class="fa fa-level-up"></i> Delete
+                   </span>
+        </div>
+        <div class="panel-body">
+            <table class="linksholder">
+            </table>
+        </div>
+    </div>
+<% } %>
+
+<div class="article">
+    <div class="grid">
+        <div id="title" style="font-size: 13pt;  font-family: 'segoeblack'; margin-left : 5px"></div>
+        
+        <form method="post" id="myCode">
+            <div class="col-2-3">
+                <textarea name="script" id="code" class="codemirror-textarea">//gcc 5.4.0
+
+#include  <stdio.h>
+
+int main(void)
+{
+    printf("Hello, world!\n");
+    return 0;
+}</textarea>
+		<div><br></div>
+                <input class="btn" id="Compile" type="button" value="Compile">
+                <input class="btn" id="Save" type="button" value="Save!">
+                <input class="btn" id="Save_AS" type="button" value="Save_AS!">
+                <pre id="Link" class="resultarea"></pre>
+            </div>
+            <div class="col-1-3">
+                <div class="loading" style="display:none"></div>
+                <h3>Input</h3>
+                <textarea name="inputs" id="inputs" cols="30" rows="4"></textarea>
+                <h3>Compile Result</h3>
+                <textarea name="result" id="result" cols="30" rows="8" disabled="disabled"></textarea>
+                Execution time : <span id="time"></span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="./js/function.js"></script>
+<script> 
+    var save_file_path='';
+    this.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        // 언어 스타일 정의하는 부분 mode를 ./public/mode 내의 폴더명 중 하나로 선택하면 그 스타일로 변경됨 +
+        // 변경을 위해서는 최상단에 script 태그로 폴더 경로와 폴더내 js파일 추가해줘야 함함
+        mode: "text/x-csrc",
+        styleActiveLine: true,
+        matchBrackets: true
+    });
+    // 테마 옵션 설정하는 부분 -> 코드미러 테마 참조
+    editor.setOption("theme", "darcula");
+    location.hash = "#" + "darcula";
+
+    $(document).ready(function () {
+        $('#Compile').click(function (event) {
+            event.preventDefault();
+            $('.loading').slideDown('slow');
+            $('#result').empty();
+            $('#time').empty();
+            $('#code').val(editor.getValue());
+            var datastring = $("#myCode").serialize();
+            $("#myCode :input").attr("disabled", true);
+
+            // 서버로 정보전달을 위한 데이터파일로 json 파일 생성 및 정보 저장
+            var json = new Object();
+            $("#mycode").serialize();
+            json.language = Langauge_String($('#language option:selected').val());       // 언어 종류
+            json.dataString = $('#code').val();  // 소스 코드
+            json.inputs = $("#inputs").val();                           // 인자값
+            json.options = $("#options").val();                         // 컴파일 옵션
+            console.log("####json####");
+            console.log(json);
+
+            // submit 버튼이 눌려질때 동작하는 함수 정의
+            $.ajax({
+                type: "POST",
+                url: "/api/compile",
+                timeout: 60000,
+                data: json,
+                dataType: "json",
+                // success 응답에 대한 콜백 함수
+                success: function (data) {
+                    console.log("#####2-1");
+                    if (data.success) {
+                        console.log("#####2-1-Success");
+                        $('#result').val(data.result);
+                        $('#time').html(data.timeExec+' ms');
+                        console.log("###TIME####");
+                        console.log(data.timeExec);
+                    } else {
+                        console.log("#####2-1-error");
+                        $('#result').html(data.error);
+                    }
+                    $("#myCode :input").attr("disabled", false);
+                    $('.loading').slideUp('slow');
+                },
+                // error 함수에 대한 콜백 함수
+                error: function (error) {
+                    console.log("#####2-2");
+                    console.log(error);
+                    $('.result').html(error);
+                    $("#myCode :input").attr("disabled", false);
+                    $('.loading').slideUp('slow');
+                }
+            });
+            // return false;
+        });
+
+
+    $('#Save').click(function (event) {
+        if (LoginCheck()) {
+            return;
+        }
+       $('#code').val(editor.getValue());
+        event.preventDefault();
+        console.log($(document.activeElement).val());
+        var datastring = $("#myCode").serialize();
+        $("#myCode :input").attr("disabled", true);
+	if(save_file_path ==''){
+		alert("file select please!");
+		return ;
+	}
+        console.log("called save file " + save_file_path)
+        console.log("called data file " + $("#code").val())
+        $.ajax({
+            type: "POST",
+            url: "/api/save_file",
+            data: {
+                "file_path": save_file_path,
+                "dataString": $("#code").val()
+            },
+            // success 응답에 대한 콜백 함수
+            success: function (data) {
+		alert("Save Complete");
+                $("#myCode :input").attr("disabled", false);
+            },
+            // error 함수에 대한 콜백 함수
+            error: function (error) {
+                $("#myCode :input").attr("disabled", false);
+                console.log("file select error");
+            }
+        });
+    });
+    
+   });
+
+    function file_select(obj) {
+        console.log($(obj).data("file_path"));
+	if(confirmCheck()){
+		return ;
+	}
+        $.ajax({
+            type: "POST",
+            url: "/api/read_file",
+            data: {"file_path": "save/" + uname + "/"+$(obj).data("file_path")},
+            // success 응답에 대한 콜백 함수
+            success: function (data) {
+                console.log("file select success");
+                console.log(data.data);
+		$("#title").html($(obj).data("file_path"))               
+                save_file_path = $(obj).data("file_path")
+
+		var extension = save_file_path.split('.');
+		$("#language").val(Langauge_Num(extension[extension.length-1]));
+                editor.setValue(data.data)
+                editor.refresh();
+            },
+            // error 함수에 대한 콜백 함수
+            error: function (error) {
+                console.log("file select error");
+            }
+        });
+    }
+    
+</script>
+<div class="article footer">
+    &copy; Copyright &copy; 2014 Sonnylab
+</div>
+<script src="/lib/bootstrap.min.js"></script>
+<script src="/lib/datatable/js/jquery.datatables.min.js"></script>
+<script src="/lib/app.js"></script>
+</body>
+</html>

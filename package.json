@@ -6,11 +6,18 @@
   },
   "dependencies": {
     "ejs": "~0.8.5",
-    "express": "3.4.1",
+    "express": "^3.4.1",
+    "express-session": "^1.17.0",
     "jade": "*",
+    "lodash": "^4.17.15",
+    "mkdirp": "^0.5.1",
     "python-shell": "^1.0.8",
+    "querystring": "^0.2.0",
+    "randomstring": "^1.1.5",
     "request": "^2.88.0",
+    "shelljs": "^0.8.3",
     "sync": "*",
-    "sync-exec": "*"
+    "sync-exec": "*",
+    "url": "^0.11.0"
   }
 }

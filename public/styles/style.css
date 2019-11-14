@@ -40,7 +40,8 @@ img {
 
 .article {
   width: 80%;
-  margin: 0 auto;
+  /*margin: 0 auto;*/
+  margin-left: 20%;
   padding: 20px 0;
   display: block;
 }
