@@ -1,0 +1,6 @@
+FROM npclown/foundation:1.0
+MAINTAINER PNU PNU@PNU.COM
+
+RUN apt-get install -y r-base-core
+RUN rm -rf /var/lib/apt/lists/*
+
