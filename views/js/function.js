@@ -1,3 +1,16 @@
+function onThemeChange() {
+    var themeName = $('#theme option:selected').val();
+
+    switch (themeName) {
+        case "idea":
+            editor.setOption("theme", "idea");
+            break
+        case "darcula":
+            editor.setOption("theme", "darcula");
+            break
+    }
+}
+
 function onModeChange() {
     console.log("changing mode");
     var modeName = Langauge_String($('#language option:selected').val());

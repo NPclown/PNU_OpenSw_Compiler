@@ -1,4 +1,4 @@
-docker pull npclown/gcc:1.0
+docker pull npclown/gcc:2.0
 docker pull npclown/clang:1.0
 docker pull npclown/java:1.0
 docker pull npclown/perl:1.0

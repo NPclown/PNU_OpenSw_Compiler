@@ -14,13 +14,15 @@ var qs = require('querystring');
 var url = require('url');
 var randomString = require('randomstring');
 var mkdirp = require('mkdirp');
+var cp = require("fs-extra");
 var fb = require('./web.js');
+var py = require('python-shell');
 
 var child = child_process.fork(__dirname + '/compile.js');
 var taskId = 0;
 var tasks = {};
 var maxQueue = 10; // menentukan seberapa banyak queue yang bisa dilayani oleh satu server
-var redirect_uri = 'http://164.125.234.247:3000/auth/github/callback';
+var redirect_uri = 'http://127.0.0.1:3000/auth/github/callback';
 
 var app = express();
 
@@ -122,7 +124,10 @@ app.get('/web', function (req, res) {
     if(req.session.name !== undefined ) {
         fs.access(req.session.dir, error =>{
             if (error){
-                shell.exec("npx create-react-app "+req.session.dir)
+                cp.copy('sample_source/web', req.session.dir, function (err) {
+                    if (err) return console.error(err)
+                    console.log('success!')
+                });
             }
         })
     }
@@ -137,6 +142,10 @@ app.get('/web', function (req, res) {
         name: req.session.name,
         user_id: req.session.user_id
     });
+});
+
+app.get('/input_window', function (req, res) {
+    res.render('input_window.ejs');
 });
 
 app.get('/compile', function (req, res) {
@@ -154,6 +163,149 @@ app.get('/compile', function (req, res) {
     });
 });
 
+app.get('/c_developer', function (req, res) {
+    req.session.login = '/c_developer';
+    console.log("web is called" + req.session.c_dir)
+    console.log("first call session.name is " + req.session.name)
+    if(req.session.name !== undefined ) {
+        fs.access(req.session.c_dir, error =>{
+            if (error){
+                cp.copy('sample_source/c_developer', req.session.c_dir, function (err) {
+                    if (err) return console.error(err)
+                    console.log('success!')
+                });
+            }
+        })
+    }
+
+    if(req.session.name !== undefined)
+        fb.setcwd(req.session.c_dir, argv.include, argv.exclude);
+    else
+        fb.setcwd(process.cwd(), argv.include, argv.exclude);
+
+    res.render("index_c_developer.ejs", {
+        title: req.session.title,
+        name: req.session.name,
+        user_id: req.session.user_id
+    });
+});
+
+app.get('/java_developer', function (req, res) {
+    req.session.login = '/java_developer';
+    console.log("web is called" + req.session.java_dir)
+    console.log("first call session.name is " + req.session.name)
+    if(req.session.name !== undefined ) {
+        fs.access(req.session.java_dir, error =>{
+            if (error){
+                cp.copy('sample_source/java_developer', req.session.java_dir, function (err) {
+                    if (err) return console.error(err)
+                    console.log('success!')
+                });
+            }
+        })
+    }
+
+    if(req.session.name !== undefined)
+        fb.setcwd(req.session.java_dir, argv.include, argv.exclude);
+    else
+        fb.setcwd(process.cwd(), argv.include, argv.exclude);
+
+    res.render("index_java_developer.ejs", {
+        title: req.session.title,
+        name: req.session.name,
+        user_id: req.session.user_id
+    });
+});
+
+
+//index_c_developer 관련
+app.post("/api/make", function (req, res){
+    var message = {
+        dir : req.session.c_dir,
+        inputs : req.body.inputs,
+        runName : req.body.runName
+    }
+    console.log(message);
+    var options = {
+            mode: 'text',
+            pythonPath: '/usr/bin/python',
+            pythonOptions: ['-u'],
+            scriptPath: 'python/',
+            args: [JSON.stringify(message)]
+    };
+
+    console.log(options);
+    py.PythonShell.run('c_developer.py',options,function(err, results){
+            if(err) throw err;
+            console.log(results);
+            var obj = eval("("+results+")");
+            if (results == null){
+                    res.send({result:"server error",timeExec: 0, success:true, id:message.id});
+            }
+            switch(obj.state){
+                    case "success":
+                            res.send({result:obj.stdout,timeExec: obj.runningTime, success:true, id:message.id});
+                            break;
+                    case "make error":
+                            res.send({result:obj.stderr,timeExec: obj.runningTime, success:true, id:message.id});
+                            break;
+                    case "tle":
+                            sh("docker rm -f " + obj.containerId);
+                            res.send({result:obj.stderr,timeExec: 0, success:true, id:message.id});			
+                            break;
+                    case "error":
+                            res.send({result:obj.stderr,timeExec: obj.runningTime, success:true, id:message.id});
+                            break;
+                    default:
+                            res.send({result:"server error",timeExec: 0, success:true, id:message.id});
+            }
+    }); 
+
+});
+
+//index_c_developer 관련
+app.post("/api/java", function (req, res){
+    var message = {
+        dir : req.session.java_dir,
+        inputs : req.body.inputs
+    }
+    console.log(message);
+    var options = {
+            mode: 'text',
+            pythonPath: '/usr/bin/python',
+            pythonOptions: ['-u'],
+            scriptPath: 'python/',
+            args: [JSON.stringify(message)]
+    };
+
+    console.log(options);
+    py.PythonShell.run('java_developer.py',options,function(err, results){
+            if(err) throw err;
+            console.log(results);
+            var obj = eval("("+results+")");
+            if (results == null){
+                    res.send({result:"server error",timeExec: 0, success:true, id:message.id});
+            }
+            switch(obj.state){
+                    case "success":
+                            res.send({result:obj.stdout+obj.stderr,timeExec: obj.runningTime, success:true, id:message.id});
+                            break;
+                    case "compile error":
+                            res.send({result:obj.stderr,timeExec: obj.runningTime, success:true, id:message.id});
+                            break;
+                    case "tle":
+                            sh("docker rm -f " + obj.containerId);
+                            res.send({result:obj.stderr,timeExec: 0, success:true, id:message.id});			
+                            break;
+                    case "error":
+                            res.send({result:obj.stderr,timeExec: obj.runningTime, success:true, id:message.id});
+                            break;
+                    default:
+                            res.send({result:"server error",timeExec: 0, success:true, id:message.id});
+            }
+    }); 
+
+});
 //index_web.js 관련
 // 추가버전 시작
 app.get('/b', function (req, res) {
@@ -181,6 +333,7 @@ var count_docker = 3001;
 app.get('/api/run_server', function (req, res) {
     console.log("do docker port is "+count_docker);
     shell.exec('sudo docker run -d --name '+req.session.user_id+' -p '+ count_docker+':3000'+' -v '+req.session.dir+':/home/web/my-app qkrwlghddlek/ubuntu_react sh -c "cd /home/web/my-app; npm start"')
+    console.log('sudo docker run -d --name '+req.session.user_id+' -p '+ count_docker+':3000'+' -v '+req.session.dir+':/home/web/my-app qkrwlghddlek/ubuntu_react sh -c "cd /home/web/my-app; npm start"');
     req.session.port = count_docker;
     count_docker +=1;
     res.send({success: true, port: req.session.port});
@@ -194,19 +347,26 @@ app.get('/api/stop_server', function (req, res) {
 
 app.post('/api/save_file', function (req, res) {
     var dataString = req.body.dataString;
-    
+    console.log("file_path : " + req.body.file_path);
+    console.log("login : " + req.session.login);
     var file_path;
     if (req.session.login == '/compile'){
-        file_path = "save/"+req.session.name+"/"+req.body.file_path;;
+        file_path = "save/"+req.session.name+"/"+req.body.file_path;
+    }else if(req.session.login == '/web'){
+        file_path = "save/"+req.session.name+"/"+"web"+"/"+req.body.file_path;
+    }else if(req.session.login == '/c_developer'){
+        file_path = "save/"+req.session.name+"/"+"c_developer"+"/"+req.body.file_path;
+    }else if(req.session.login == '/java_developer'){
+        file_path = "save/"+req.session.name+"/"+"java_developer"+"/"+req.body.file_path;
     }else{
-        file_path = "save/"+req.session.name+"/"+"web"+"/"+req.body.file_path;;
+
     }
 
+    console.log(file_path);
     fs.writeFile(file_path, dataString, "utf8", function (error) {
         if (error) {
             throw error
         }
-        ;
         res.send({success: true});
     });
 });
@@ -214,10 +374,17 @@ app.post('/api/save_file', function (req, res) {
 app.get('/api/create_file', function (req, res) {
     console.log("##create##");
     var file_path;
+
     if (req.session.login == '/compile'){
         file_path = "save/"+req.session.name+"/"+req.query.path;
-    }else{
+    }else if(req.session.login == '/web'){
         file_path = "save/"+req.session.name+"/"+"web"+"/"+req.query.path;
+    }else if(req.session.login == '/c_developer'){
+        file_path = "save/"+req.session.name+"/"+"c_developer"+"/"+req.query.path;
+    }else if(req.session.login == '/java_developer'){
+        file_path = "save/"+req.session.name+"/"+"java_developer"+"/"+req.query.path;
+    }else{
+
     }
 
     fs.writeFile(file_path, "", "utf8", function (error, data) {
@@ -231,23 +398,84 @@ app.get('/api/create_file', function (req, res) {
     });
 });
 
+app.get('/api/create_folder', function (req, res) {
+    console.log("##create##");
+    var file_path;
+    if (req.session.login == '/compile'){
+        file_path = "save/"+req.session.name+"/"+req.query.path;
+    }else if(req.session.login == '/web'){
+        file_path = "save/"+req.session.name+"/"+"web"+"/"+req.query.path;
+    }else if(req.session.login == '/c_developer'){
+        file_path = "save/"+req.session.name+"/"+"c_developer"+"/"+req.query.path;
+    }else if(req.session.login == '/java_developer'){
+        file_path = "save/"+req.session.name+"/"+"java_developer"+"/"+req.query.path;
+    }else{
+
+    }
+
+    mkdirp(file_path, function (err) {
+        if (err)
+            console.error(err);
+    });
+});
+
+app.get('/api/down_file', function (req, res) {
+    console.log("##download##");
+    var file_path;
+    if (req.session.login == '/compile'){
+        file_path = "save/"+req.session.name+"/"+req.query.path;
+    }else if(req.session.login == '/web'){
+        file_path = "save/"+req.session.name+"/"+"web"+"/"+req.query.path;
+    }else if(req.session.login == '/c_developer'){
+        file_path = "save/"+req.session.name+"/"+"c_developer"+"/"+req.query.path;
+    }else if(req.session.login == '/java_developer'){
+        file_path = "save/"+req.session.name+"/"+"java_developer"+"/"+req.query.path;
+    }else{
+
+    }
+    console.log("D:/git/final_pnu/"+file_path);
+    res.download(file_path);
+});
+
+
 app.get('/api/delete_file', function (req, res) {
     console.log("##delete##");
     var file_path;
     if (req.session.login == '/compile'){
         file_path = "save/"+req.session.name+"/"+req.query.path;
-    }else{
+    }else if(req.session.login == '/web'){
         file_path = "save/"+req.session.name+"/"+"web"+"/"+req.query.path;
-    }
+    }else if(req.session.login == '/c_developer'){
+        file_path = "save/"+req.session.name+"/"+"c_developer"+"/"+req.query.path;
+    }else if(req.session.login == '/java_developer'){
+        file_path = "save/"+req.session.name+"/"+"java_developer"+"/"+req.query.path;
+    }else{
 
-    fs.unlink(file_path, function (error) {
-        if (error) {
-            console.log("no file " + error)
+    }
+    console.log("file_path : " + file_path);
+	fs.lstat(file_path, (err, stats) => {
+        if(err)
+            return console.log(err); //Handle error
+
+        if(`${stats.isDirectory()}` == "true"){
+            console.log("that is dir");
+            fs.rmdir(file_path, function (error) {
+                if (error) {
+                    console.log("no file " + error)
+                };
+                res.send({success: true});
+            });
         }
-        ;
-        res.send({success: true});
-        // console.log(data);
-        // res.json(data);
+
+        if(`${stats.isFile()}` == "true") {
+            console.log("that is file")
+            fs.unlink(file_path, function (error) {
+                if (error) {
+                    console.log("no file " + error)
+                };
+                res.send({success: true});
+            });
+        }
     });
 });
 
@@ -312,7 +540,7 @@ app.get('/login', (req, res, next) => {
     const githubAuthUrl =
         'https://github.com/login/oauth/authorize?' +
         qs.stringify({
-            client_id: 'e472c7ced670e3120b61',
+            client_id: '082085f52792544c7616',
             redirect_uri: redirect_uri,
             state: req.session.csrf_string,
             scope: 'user:email'
@@ -330,8 +558,8 @@ app.all('/auth/github/callback', (req, res) => {
                 url:
                     'https://github.com/login/oauth/access_token?' +
                     qs.stringify({
-                        client_id: 'e472c7ced670e3120b61',
-                        client_secret: 'ede3631278b6f94f5641eec214180ba9a47e4c0e',
+                        client_id: '082085f52792544c7616',
+                        client_secret: 'e09cf9c4ad40601e3271083e0e4c959d2a1d7784',
                         code: code,
                         redirect_uri: redirect_uri,
                         state: req.session.csrf_string
@@ -364,6 +592,8 @@ app.get('/user', (req, res) => {
             req.session.user_id= obj.id;
 	    req.session.dir = process.cwd()+"/save/"+obj.login+"/web";
             req.session.compile_dir = process.cwd()+"/save/"+obj.login;
+            req.session.c_dir = process.cwd()+"/save/"+obj.login+"/c_developer";
+            req.session.java_dir = process.cwd()+"/save/"+obj.login+"/java_developer";
 	    mkdirp(req.session.compile_dir, function (err) {
 		    if (err)
 		        console.error(err);

@@ -112,7 +112,7 @@
             type: "POST",
             url: "/api/save",
             data: {
-                "file_name" : returnValue,
+                "file_name": returnValue,
                 "dataString": $("#code").val()
             },
             // success 응답에 대한 콜백 함수
@@ -154,32 +154,91 @@
         });
     });
 
+    $(".down").bind("click", function (e) {
+        var name = '_blank';
+        var specs = 'menubar=no,status=no,toolbar=no,fullscreen=no,height=200,weight=200,location=no,resizable=no,scrollbars=no,titlebar=no';
+        window.onmessage = function (e) {
+            var dir_checker = e.data.toString().slice(0, 1);
+            var returnValue = e.data.toString().slice(2);
+
+            console.log("dir checker:" + dir_checker)
+            console.log("name:" + name)
+
+            if (returnValue == "" || returnValue == "." || returnValue == "/" || returnValue == "null" || returnValue == null)
+                return;
+            console.log(returnValue);
+            var path;
+            var file_path;
+            if (!currentPath) {
+                file_path = returnValue;
+                path = ""
+            } else {
+                file_path = currentPath + "/" + returnValue;
+                path = currentPath;
+            }
+
+            if (dir_checker == "d") {
+                $.get('/api/down_folder?path=' + file_path).then(function (data) {
+                    console.log('/api/create_file?path=' + file_path)
+                    // currentPath = path;
+                });
+            } else {
+                // $.get('/api/down_file?path=' + file_path).then(function (data) {
+                //     console.log('/api/create_file?path=' + file_path)
+                //     // currentPath = path;
+                // });
+                window.location = "/api/down_file?path=" + file_path;
+            }
+        };
+        var newWindow = window.open("input_window", name, specs);
+        newWindow.focus();
+    });
+
+
     $(".add").bind("click", function (e) {
-        var returnValue = prompt("New File Name", "");
-        if (returnValue == "" || returnValue == "." || returnValue == "/" || returnValue == "null" || returnValue == null)
-            return;
-        console.log(returnValue);
-        var path;
-        var file_path;
-        if (!currentPath) {
-            file_path = returnValue;
-            path = ""
-        } else {
-            file_path = currentPath + "/" + returnValue;
-            path = currentPath;
-        }
+        var name = '_blank';
+        var specs = 'menubar=no,status=no,toolbar=no,fullscreen=no,height=200,weight=200,location=no,resizable=no,scrollbars=no,titlebar=no';
+        window.onmessage = function (e) {
+            var dir_checker = e.data.toString().slice(0, 1);
+            var returnValue = e.data.toString().slice(2);
 
-        $.get('/api/create_file?path=' + file_path).then(function (data) {
-            console.log('/api/save_file?path=' + file_path)
-            // currentPath = path;
-        });
+            console.log("dir checker:" + dir_checker)
+            console.log("name:" + name)
 
-        $.get('/files?path=' + path).then(function (data) {
-            console.log("called")
-            table.fnClearTable();
-            table.fnAddData(data);
-            currentPath = path;
-        });
+            if (returnValue == "" || returnValue == "." || returnValue == "/" || returnValue == "null" || returnValue == null)
+                return;
+            console.log(returnValue);
+            var path;
+            var file_path;
+            if (!currentPath) {
+                file_path = returnValue;
+                path = ""
+            } else {
+                file_path = currentPath + "/" + returnValue;
+                path = currentPath;
+            }
+
+            if (dir_checker == "d") {
+                $.get('/api/create_folder?path=' + file_path).then(function (data) {
+                    console.log('/api/create_file?path=' + file_path)
+                    // currentPath = path;
+                });
+            } else {
+                $.get('/api/create_file?path=' + file_path).then(function (data) {
+                    console.log('/api/create_file?path=' + file_path)
+                    // currentPath = path;
+                });
+            }
+
+            $.get('/files?path=' + path).then(function (data) {
+                console.log("called")
+                table.fnClearTable();
+                table.fnAddData(data);
+                currentPath = path;
+            });
+        };
+        var newWindow = window.open("input_window", name, specs);
+        newWindow.focus();
     });
 
     $(".delete").bind("click", function (e) {
@@ -198,7 +257,7 @@
         }
 
         $.get('/api/delete_file?path=' + file_path).then(function (data) {
-            console.log('/api/delete_file?path=' + file_path)
+            console.log('/api/delete_file?path=' + data);
             // currentPath = path;
         });
 

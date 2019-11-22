@@ -8,8 +8,10 @@
     <link rel="stylesheet" href="/styles/style.css">
     <link rel="stylesheet" type="text/css" href="/../lib/codemirror.css">
     <link rel="stylesheet" href="../theme/darcula.css">
+    <link rel="stylesheet" href="../theme/idea.css">
     <script type="text/javascript" src="../lib/codemirror.js"></script>
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="../mode/python/python.js"></script>
     <script src="../mode/clike/clike.js"></script>
     <script src="../mode/perl/perl.js"></script>
@@ -43,25 +45,31 @@
             <% }else{ %>
                 <li><a href='/login'>Login</a></li>
             <% } %>
-                <li><a href='/compile'>Compile</a></li>
-                <li><a href='/web'>WebDevelop</a></li>
-                <li><select name="language" id="language" style="margin-left:20px;" onchange="onModeChange()">
-                        <option value="1">Bash</option>
-                        <option value="5" selected="selected">C</option>
-                        <option value="6">C(clang)</option>
-                        <option value="7">C++</option>
-                        <option value="8">C++11</option>
-                        <option value="9">C++(clang)</option>
-                        <option value="10">C#</option>
-                        <option value="15">Java</option>
-                        <option value="20">NodeJS</option>
-                        <option value="25">Object-C</option>
-                        <option value="26">Object-C++</option>
-                        <option value="30">Perl</option>
-                        <option value="31">Python</option>
-                        <option value="32">Python3</option>
-                        <option value="35">R</option>
-                    </select></li>
+            <li><a href='/compile'>Compile</a></li>
+            <li><a href='/web'>WebDevelop</a></li>
+            <li><a href='/c_developer'>C_Develop</a></li>
+            <li><a href='/java_developer'>JAVA_Develop</a></li>
+            <li><select name="language" id="language" style="margin-left:20px;" onchange="onModeChange()">
+                    <option value="1">Bash</option>
+                    <option value="5" selected="selected">C</option>
+                    <option value="6">C(clang)</option>
+                    <option value="7">C++</option>
+                    <option value="8">C++11</option>
+                    <option value="9">C++(clang)</option>
+                    <option value="10">C#</option>
+                    <option value="15">Java</option>
+                    <option value="20">NodeJS</option>
+                    <option value="25">Object-C</option>
+                    <option value="26">Object-C++</option>
+                    <option value="30">Perl</option>
+                    <option value="31">Python</option>
+                    <option value="32">Python3</option>
+                    <option value="35">R</option>
+                </select></li>
+            <li><select name="theme" id="theme" style="margin-left:10px;" onchange="onThemeChange()">
+                    <option value="idea">idea</option>
+                    <option value="darcula" selected="selected">darcula</option>
+                </select></li>
 
         </ul>
     </div>
@@ -71,7 +79,7 @@
     <div class="panel panel-default mainpanel" style="float: left">
         <div class="panel-heading">
             <div style="text-align:center">
-            File Browser
+                File Browser
             </div>
             <span class="up">
                     <i class="fa fa-level-up"></i> Up
@@ -84,6 +92,9 @@
             <span class="delete" id="delete_button">
                     <i class="fa fa-level-up"></i> Delete
                    </span>
+            <div><span class="down" id="download_button">
+		    <i class="fa fa-level-up"></i> Down
+		   </span></div>
         </div>
         <div class="panel-body">
             <table class="linksholder">
@@ -95,9 +106,9 @@
 <div class="article">
     <div class="grid">
         <div id="title" style="font-size: 13pt;  font-family: 'segoeblack'; margin-left : 5px"></div>
-        
+
         <form method="post" id="myCode">
-            <div class="col-2-3">
+            <div class="col-9-12">
                 <textarea name="script" id="code" class="codemirror-textarea">//gcc 5.4.0
 
 #include  <stdio.h>
@@ -107,13 +118,13 @@ int main(void)
     printf("Hello, world!\n");
     return 0;
 }</textarea>
-		<div><br></div>
+                <div><br></div>
                 <input class="btn" id="Compile" type="button" value="Compile">
                 <input class="btn" id="Save" type="button" value="Save!">
                 <input class="btn" id="Save_AS" type="button" value="Save_AS!">
                 <pre id="Link" class="resultarea"></pre>
             </div>
-            <div class="col-1-3">
+            <div class="col-3-12">
                 <div class="loading" style="display:none"></div>
                 <h3>Input</h3>
                 <textarea name="inputs" id="inputs" cols="30" rows="4"></textarea>
@@ -126,8 +137,8 @@ int main(void)
 </div>
 
 <script src="./js/function.js"></script>
-<script> 
-    var save_file_path='';
+<script>
+    var save_file_path = '';
     this.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
         // 언어 스타일 정의하는 부분 mode를 ./public/mode 내의 폴더명 중 하나로 선택하면 그 스타일로 변경됨 +
@@ -138,13 +149,14 @@ int main(void)
     });
     // 테마 옵션 설정하는 부분 -> 코드미러 테마 참조
     editor.setOption("theme", "darcula");
-    location.hash = "#" + "darcula";
+    // location.hash = "#" + "darcula";
+
 
     $(document).ready(function () {
         $('#Compile').click(function (event) {
             event.preventDefault();
             $('.loading').slideDown('slow');
-            $('#result').empty();
+            $('#result').val("");
             $('#time').empty();
             $('#code').val(editor.getValue());
             var datastring = $("#myCode").serialize();
@@ -173,7 +185,7 @@ int main(void)
                     if (data.success) {
                         console.log("#####2-1-Success");
                         $('#result').val(data.result);
-                        $('#time').html(data.timeExec+' ms');
+                        $('#time').html(data.timeExec + ' ms');
                         console.log("###TIME####");
                         console.log(data.timeExec);
                     } else {
@@ -196,61 +208,61 @@ int main(void)
         });
 
 
-    $('#Save').click(function (event) {
-        if (LoginCheck()) {
-            return;
-        }
-       $('#code').val(editor.getValue());
-        event.preventDefault();
-        console.log($(document.activeElement).val());
-        var datastring = $("#myCode").serialize();
-        $("#myCode :input").attr("disabled", true);
-	if(save_file_path ==''){
-		alert("file select please!");
-		return ;
-	}
-        console.log("called save file " + save_file_path)
-        console.log("called data file " + $("#code").val())
-        $.ajax({
-            type: "POST",
-            url: "/api/save_file",
-            data: {
-                "file_path": save_file_path,
-                "dataString": $("#code").val()
-            },
-            // success 응답에 대한 콜백 함수
-            success: function (data) {
-		alert("Save Complete");
-                $("#myCode :input").attr("disabled", false);
-            },
-            // error 함수에 대한 콜백 함수
-            error: function (error) {
-                $("#myCode :input").attr("disabled", false);
-                console.log("file select error");
+        $('#Save').click(function (event) {
+            if (LoginCheck()) {
+                return;
             }
+            $('#code').val(editor.getValue());
+            event.preventDefault();
+            console.log($(document.activeElement).val());
+            var datastring = $("#myCode").serialize();
+            $("#myCode :input").attr("disabled", true);
+            if (save_file_path == '') {
+                alert("file select please!");
+                return;
+            }
+            console.log("called save file " + save_file_path)
+            console.log("called data file " + $("#code").val())
+            $.ajax({
+                type: "POST",
+                url: "/api/save_file",
+                data: {
+                    "file_path": save_file_path,
+                    "dataString": $("#code").val()
+                },
+                // success 응답에 대한 콜백 함수
+                success: function (data) {
+                    alert("Save Complete");
+                    $("#myCode :input").attr("disabled", false);
+                },
+                // error 함수에 대한 콜백 함수
+                error: function (error) {
+                    $("#myCode :input").attr("disabled", false);
+                    console.log("file select error");
+                }
+            });
         });
+
     });
-    
-   });
 
     function file_select(obj) {
         console.log($(obj).data("file_path"));
-	if(confirmCheck()){
-		return ;
-	}
+        if (confirmCheck()) {
+            return;
+        }
         $.ajax({
             type: "POST",
             url: "/api/read_file",
-            data: {"file_path": "save/" + uname + "/"+$(obj).data("file_path")},
+            data: {"file_path": "save/" + uname + "/" + $(obj).data("file_path")},
             // success 응답에 대한 콜백 함수
             success: function (data) {
                 console.log("file select success");
                 console.log(data.data);
-		$("#title").html($(obj).data("file_path"))               
+                $("#title").html($(obj).data("file_path"))
                 save_file_path = $(obj).data("file_path")
 
-		var extension = save_file_path.split('.');
-		$("#language").val(Langauge_Num(extension[extension.length-1]));
+                var extension = save_file_path.split('.');
+                $("#language").val(Langauge_Num(extension[extension.length - 1]));
                 editor.setValue(data.data)
                 editor.refresh();
             },
@@ -260,7 +272,7 @@ int main(void)
             }
         });
     }
-    
+
 </script>
 <div class="article footer">
     &copy; Copyright &copy; 2014 Sonnylab

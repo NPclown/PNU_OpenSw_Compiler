@@ -77,7 +77,7 @@
                     <i class="fa fa-level-up"></i> Delete
                    </span>
             <div><span class="down" id="download_button">
-		    <i class="fa fa-level-up"></i> Down
+		    <i class="fa fa-level-up"></i> Down		
 		   </span></div>
         </div>
         <div class="panel-body">
@@ -95,14 +95,13 @@
             <div class="col-9-12">
                 <textarea name="script" id="code" class="codemirror-textarea"></textarea>
                 <div><br></div>
-                <input class="btn" id="save_and_compile" name="save_and_compile" type="button" onclick="runServer()"
-                       value="Run!">
-                <input class="btn" id="stop_server" name="stop_server" type="button" onclick="stopServer()"
-                       value="Stop!">
+                <input class="btn" id="run" name="save_and_compile" type="button" value="Run!">
                 <input class="btn" id="button_save" type="button" value="save!">
             </div>
             <div class="col-3-12">
                 <div class="loading" style="display:none"></div>
+                <h3>Input</h3>
+                <textarea name="inputs" id="inputs" cols="30" rows="4"></textarea>
                 <h3>Server Result</h3>
                 <textarea name="result" id="result" cols="30" rows="8" disabled="disabled"></textarea>
                 Execution time : <span id="time"></span>
@@ -119,7 +118,7 @@
         lineNumbers: true,
         // 언어 스타일 정의하는 부분 mode를 ./public/mode 내의 폴더명 중 하나로 선택하면 그 스타일로 변경됨 +
         // 변경을 위해서는 최상단에 script 태그로 폴더 경로와 폴더내 js파일 추가해줘야 함함
-        mode: "text/javascript",
+        mode: "text/x-java",
         styleActiveLine: true,
         matchBrackets: true
     });
@@ -135,7 +134,7 @@
         $.ajax({
             type: "POST",
             url: "/api/read_file",
-            data: {"file_path": "save/" + uname + "/web/" + $(obj).data("file_path")},
+            data: {"file_path": "save/" + uname + "/java_developer/" + $(obj).data("file_path")},
             // success 응답에 대한 콜백 함수
             success: function (data) {
                 console.log("file select success");
@@ -144,51 +143,11 @@
                 editor.setValue(data.data)
                 editor.refresh();
                 save_file_path = $(obj).data("file_path")
+                console.log(save_file_path);
             },
             // error 함수에 대한 콜백 함수
             error: function (error) {
                 console.log("file select error");
-            }
-        });
-    }
-
-    function stopServer() {
-        if (LoginCheck()) {
-            return;
-        }
-        $.ajax({
-            type: "GET",
-            url: "/api/stop_server",
-            data: {},
-            // success 응답에 대한 콜백 함수
-            success: function (data) {
-                console.log("run server success");
-                $('#result').val('Server Stopped')
-            },
-            // error 함수에 대한 콜백 함수
-            error: function (error) {
-                console.log("run server false");
-            }
-        });
-    }
-
-    function runServer() {
-        if (LoginCheck()) {
-            return;
-        }
-        $.ajax({
-            type: "GET",
-            url: "/api/run_server",
-            data: {},
-            // success 응답에 대한 콜백 함수
-            success: function (data) {
-                console.log("run server success");
-                console.log("port is " + data.port);
-                $('#result').val('Server Running on port ' + data.port + '\n' + 'http:164.125.234.247:' + data.port)
-            },
-            // error 함수에 대한 콜백 함수
-            error: function (error) {
-                console.log("run server false");
             }
         });
     }
@@ -220,6 +179,44 @@
             success: function (data) {
                 alert("Save Complete");
                 $("#myCode :input").attr("disabled", false);
+            },
+            // error 함수에 대한 콜백 함수
+            error: function (error) {
+                $("#myCode :input").attr("disabled", false);
+                console.log("file save error");
+            }
+        });
+    });
+
+    $('#run').click(function (event) {
+        if (LoginCheck()) {
+            return;
+        }
+        $('#result').val("");
+        $('#time').empty();
+        $('.loading').slideDown('slow');
+        $("#myCode :input").attr("disabled", true);
+
+        $.ajax({
+            type: "POST",
+            url: "/api/java",
+            data: {
+                "inputs": $("#inputs").val()
+            },
+            // success 응답에 대한 콜백 함수
+            success: function (data) {
+                if (data.success) {
+                    console.log("#####2-1-Success");
+                    $('#result').val(data.result);
+                    $('#time').html(data.timeExec + ' ms');
+                    console.log("###TIME####");
+                    console.log(data.timeExec);
+                } else {
+                    console.log("#####2-1-error");
+                    $('#result').html(data.error);
+                }
+                $("#myCode :input").attr("disabled", false);
+                $('.loading').slideUp('slow');
             },
             // error 함수에 대한 콜백 함수
             error: function (error) {

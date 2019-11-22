@@ -12,7 +12,7 @@ def getVolumnPath(S):
         hostVolumn = hostVolumn + '/'
     return (hostVolumn, containerVolumn)
 
-def compile(sourceFile, volumn, compilerName = 'g++', option='-std=c++0x', binaryName='a.out', imageName='npclown/gcc:1.0', timeLimit=10, logger=None):
+def compile(sourceFile, volumn, compilerName = 'g++', option='-std=c++0x', binaryName='a.out', imageName='npclown/gcc:2.0', timeLimit=10, logger=None):
     (hostVolumn, containerVolumn) = getVolumnPath(volumn)
 
     if len(sourceFile) < 1:

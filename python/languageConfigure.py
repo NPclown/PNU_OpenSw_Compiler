@@ -44,19 +44,19 @@ compileKwargs = {
         'compilerName': 'g++',
         'option': '-O2 -Wall -lm --static -DONLINE_JUDGE',
         'binaryName': 'a.out',
-        'imageName': 'npclown/gcc:1.0'
+        'imageName': 'npclown/gcc:2.0'
     },
     'C++11': {
         'compilerName': 'g++',
         'option': '-O2 -Wall -lm --static -std=c++11 -DONLINE_JUDGE',
         'binaryName': 'a.out',
-        'imageName': 'npclown/gcc:1.0'
+        'imageName': 'npclown/gcc:2.0'
     },
     'C':{
         'compilerName': 'gcc',
         'option': '-O2 -Wall -lm --static -std=gnu99 -DONLINE_JUDGE',
         'binaryName': 'a.out',
-        'imageName': 'npclown/gcc:1.0'
+        'imageName': 'npclown/gcc:2.0'
     },
     'C++(clang)': {
         'compilerName': 'clang++',
@@ -116,13 +116,13 @@ runCallingFunction = {
 }
 runKwargs = {
     'C++': {
-        'imageName': 'npclown/gcc:1.0'
+        'imageName': 'npclown/gcc:2.0'
     },
     'C++11': {
-        'imageName': 'npclown/gcc:1.0'
+        'imageName': 'npclown/gcc:2.0'
     },
     'C': {
-        'imageName': 'npclown/gcc:1.0'
+        'imageName': 'npclown/gcc:2.0'
     },
     'C++(clang)': {
         'imageName': 'npclown/clang:1.0'
@@ -132,11 +132,11 @@ runKwargs = {
     },
     'python': { 
 	'intpName': 'python',
-        'imageName': 'npclown/gcc:1.0'
+        'imageName': 'npclown/gcc:2.0'
     },
     'python3': { 
 	'intpName': 'python3',
-        'imageName': 'npclown/gcc:1.0'
+        'imageName': 'npclown/gcc:2.0'
     },
     'java': {
         'option': '-Dfile.encoding=UTF-8 -classpath /data',
@@ -145,7 +145,7 @@ runKwargs = {
     },
     'bash' : {
         'intpName': 'bash',
-	'imageName' : 'npclown/gcc:1.0'
+	'imageName' : 'npclown/gcc:2.0'
     },
     'perl' : {
         'intpName': 'perl',
