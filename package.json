@@ -9,7 +9,7 @@
     "express": "^3.4.1",
     "express-session": "^1.17.0",
     "jade": "*",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mkdirp": "^0.5.1",
     "nodegit": "^0.26.2",
     "python-shell": "^1.0.8",
