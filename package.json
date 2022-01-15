@@ -16,7 +16,7 @@
     "querystring": "^0.2.0",
     "randomstring": "^1.1.5",
     "request": "^2.88.0",
-    "shelljs": "^0.8.3",
+    "shelljs": "^0.8.5",
     "sync": "*",
     "sync-exec": "*",
     "url": "^0.11.0"
